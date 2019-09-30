@@ -10,7 +10,7 @@ class FireResetEnv(gym.Wrapper):
         assert len(env.unwrapped.get_action_meanings()) >= 3
         
     def step(self,action):
-        return self.env.step.action()
+        return self.env.step(action)
     
     def reset(self):
         self.env.reset()
@@ -33,7 +33,7 @@ class MaxAndSkipEnv(gym.Wrapper):
     def step(self, action):
         total_reward = 0.0
         done =None
-        for _ in range(self.skip):
+        for _ in range(self._skip):
             obs, reward, done, info = self.env.step(action)
             self._obs_buffer.append(obs)
             total_reward += reward
@@ -100,9 +100,9 @@ class ScaledFloatFrame(gym.ObservationWrapper):
     
 def make_env(env_name):
     env = gym.make(env_name)
-    env = MakeAndSkipEnv(env)
+    env = MaxAndSkipEnv(env)
     env = FireResetEnv(env)
     env = ProcessFrame84(env)
-    env = ImageToPytorch(env)
+    env = ImageToPyTorch(env)
     env = BufferWrapper(env, 4)
     return ScaledFloatFrame(env)
